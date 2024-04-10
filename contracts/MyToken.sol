@@ -1,45 +1,37 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable@5.0.2/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable@5.0.2/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable@5.0.2/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable@5.0.2/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable@5.0.2/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable@5.0.2/proxy/utils/UUPSUpgradeable.sol";
 
-contract MyToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC20PausableUpgradeable, OwnableUpgradeable, ERC20PermitUpgradeable {
+contract SRFBTokenName is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, OwnableUpgradeable, ERC20PermitUpgradeable, UUPSUpgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
     function initialize(address initialOwner) initializer public {
-        __ERC20_init("MyToken", "MTK");
+        __ERC20_init("SRFB Token name", "SRFB");
         __ERC20Burnable_init();
-        __ERC20Pausable_init();
         __Ownable_init(initialOwner);
-        __ERC20Permit_init("MyToken");
-    }
+        __ERC20Permit_init("SRFB Token name");
+        __UUPSUpgradeable_init();
 
-    function pause() public onlyOwner {
-        _pause();
-    }
-
-    function unpause() public onlyOwner {
-        _unpause();
+        _mint(msg.sender, 10000000 * 10 ** decimals());
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }
 
-    // The following functions are overrides required by Solidity.
-
-    function _update(address from, address to, uint256 value)
+    function _authorizeUpgrade(address newImplementation)
         internal
-        override(ERC20Upgradeable, ERC20PausableUpgradeable)
-    {
-        super._update(from, to, value);
-    }
+        onlyOwner
+        override
+    {}
 }
